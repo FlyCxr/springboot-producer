@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.springboot.dao.DrvierDao">
+
+	<select id="getDrvierByPhoneNum" resultType="DrvierEntity" >
+        SELECT * FROM DRIVER a
+        <where>
+			<if test="phoneNum != null and phoneNum !=''">
+				AND a.DRVIER_PHONE = #{phoneNum}
+			</if>
+		</where>
+    </select>
+
+	<select id="getDrviersByUnit" resultType="DrvierEntity" >
+		SELECT * FROM DRIVER a
+		<where>
+			<if test="buyCarUnit != null and buyCarUnit !=''">
+				AND a.BUY_CAR_UNIT = #{buyCarUnit}
+			</if>
+
+			<if test="useCarUnit != null and useCarUnit !=''">
+				AND a.USE_CAR_UNIT = #{useCarUnit}
+			</if>
+		</where>
+	</select>
+	
+	<update id="updateDrvier" parameterType="DrvierEntity">
+		update DRIVER a set a.updatedTime = now(),a.updatedBy = #{entity.updatedBy},a.version = #{entity.version}+1
+		<if test="entity.buyCarUnit != null and entity.buyCarUnit !=''">
+			,a.BUY_CAR_UNIT=#{entity.buyCarUnit}
+		</if>
+		<if test="entity.useCarUnit != null and entity.useCarUnit !=''">
+			,a.USE_CAR_UNIT=#{entity.useCarUnit}
+		</if>
+		<if test="entity.drvierPhone != null and entity.drvierPhone !=''">
+			,a.DRVIER_PHONE=#{entity.drvierPhone}
+		</if>
+  		where a.version = #{entity.version} and a.id = #{entity.id}
+	</update>
+</mapper>
