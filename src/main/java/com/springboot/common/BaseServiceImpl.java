@@ -43,8 +43,8 @@ public class BaseServiceImpl<T> implements BaseService<T> {
         BaseEntity bd = (BaseEntity) entity;
         Page<Object> page = PageHelper.startPage(bd.getPage()==null?1:bd.getPage(), bd.getPageSize()==null?10:bd.getPageSize());
         JSONObject result = new JSONObject();
-        result.put("items",baseDao.select(entity));
-        result.put("totalCount",page.getTotal());
+        result.put("list",baseDao.select(entity));
+        result.put("count",page.getTotal());
         return result;
     }
 }
