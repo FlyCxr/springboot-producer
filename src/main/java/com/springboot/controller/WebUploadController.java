@@ -1,11 +1,10 @@
 package com.springboot.controller;
 
 import com.springboot.service.WebUploadService;
+import com.springboot.util.StringUtil;
 import com.springboot.util.WebUploadFileUtil;
 import com.springboot.vo.WebUploadVo;
 import io.swagger.annotations.*;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -79,7 +78,7 @@ public class WebUploadController {
         Object response;
         try{
             WebUploadFileUtil.inputStreamToFile(multipartFile.getInputStream(),f);
-            if(StringUtils.isBlank(request.getParameter("chunk"))){
+            if(StringUtil.isBlank(request.getParameter("chunk"))){
                 response = webUploadService.unChunkUpload(f,vo);
             }else{
                 response = webUploadService.chunkUpload(f,vo);

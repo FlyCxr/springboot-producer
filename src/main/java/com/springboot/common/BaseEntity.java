@@ -5,10 +5,11 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import java.io.Serializable;
 import java.util.Date;
 
 @SuppressWarnings("all")
-public class BaseEntity {
+public class BaseEntity implements Serializable{
 
     @Id
     @GeneratedValue(generator = "JDBC")

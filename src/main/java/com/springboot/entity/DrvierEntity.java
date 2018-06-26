@@ -3,10 +3,11 @@ package com.springboot.entity;
 import com.springboot.common.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Table(name = "DRIVER")
 @SuppressWarnings("all")
-public class DrvierEntity extends BaseEntity{
+public class DrvierEntity extends BaseEntity implements Serializable {
 
     @Column(name = "BUY_CAR_UNIT")
     private String buyCarUnit;

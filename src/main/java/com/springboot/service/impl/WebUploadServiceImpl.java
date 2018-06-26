@@ -1,13 +1,11 @@
 package com.springboot.service.impl;
 
 import com.springboot.service.WebUploadService;
+import com.springboot.util.StringUtil;
 import com.springboot.util.WebUploadFileUtil;
 import com.springboot.vo.WebUploadVo;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -25,9 +23,9 @@ public class WebUploadServiceImpl implements WebUploadService {
 
     @Override
     public Object check(WebUploadVo vo) {
-        Long chunk = StringUtils.isBlank(vo.getChunk()) ? 0L : Long.valueOf(vo.getChunk());
+        Long chunk = StringUtil.isBlank(vo.getChunk()) ? 0L : Long.valueOf(vo.getChunk());
         String fileName = vo.getFileName();
-        Long fileSize = StringUtils.isBlank(vo.getFileSize()) ? 0L :Long.valueOf(vo.getFileSize());
+        Long fileSize = StringUtil.isBlank(vo.getFileSize()) ? 0L :Long.valueOf(vo.getFileSize());
         String fileMd5 = vo.getFileMd5();
         if (chunk == 0) { // 未分片校验
             String destfilePath = UPLOAD_PATH  + File.separator + fileName;
@@ -53,10 +51,10 @@ public class WebUploadServiceImpl implements WebUploadService {
     @Override
     public Object chunkUpload(File file,WebUploadVo vo) {
         String fileName = vo.getName();
-        Long chunk = StringUtils.isBlank(vo.getChunk()) ? 0 :Long.valueOf(vo.getChunk());
-        Long fileSize = StringUtils.isBlank(vo.getFileSize()) ? 0L :Long.valueOf(vo.getFileSize());
-        Long chunks = StringUtils.isBlank(vo.getChunks()) ? 0L :Long.valueOf(vo.getChunks());
-        Long chunkSize = StringUtils.isBlank(vo.getChunkSize()) ? 0L :Long.valueOf(vo.getChunkSize());
+        Long chunk = StringUtil.isBlank(vo.getChunk()) ? 0 :Long.valueOf(vo.getChunk());
+        Long fileSize = StringUtil.isBlank(vo.getFileSize()) ? 0L :Long.valueOf(vo.getFileSize());
+        Long chunks = StringUtil.isBlank(vo.getChunks()) ? 0L :Long.valueOf(vo.getChunks());
+        Long chunkSize = StringUtil.isBlank(vo.getChunkSize()) ? 0L :Long.valueOf(vo.getChunkSize());
         String fileMd5 = vo.getFileMd5();
         // 分片目录创建
         String chunkDirPath = UPLOAD_PATH  + File.separator + fileMd5;
