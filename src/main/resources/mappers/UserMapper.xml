@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.springboot.dao.UserDao">
+
+	<select id="getUserByLogin" resultType="UserEntity" >
+        SELECT * FROM user a
+        <where>
+			a.ACTIVE = 'Y'
+			<if test="userName != null and userName !=''">
+				AND a.userName = #{userName}
+			</if>
+			<if test="password != null and password !=''">
+				AND a.password = #{password}
+			</if>
+		</where>
+    </select>
+
+	<select id="getUserByUserName" resultType="UserEntity" >
+		SELECT * FROM user a
+		<where>
+			a.ACTIVE = 'Y'
+			<if test="userName != null and userName !=''">
+				AND a.userName = #{userName}
+			</if>
+		</where>
+	</select>
+
+</mapper>
