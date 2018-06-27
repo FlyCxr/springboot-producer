@@ -308,12 +308,13 @@ public class DemoApplicationTests {
 		//redis锁测试
 		DrvierEntity entity11 = new DrvierEntity();
 		entity11.setId(47L);
-		entity11.setVersion(1);
-		entity11.setDrvierPhone("15000811111");
+		entity11.setVersion(2);
+		entity11.setDrvierPhone("15000811122");
+		entity11.setDrvierName("15000811122");
 		entity11.setUseCarUnit("55");
 		entity11.setBuyCarUnit("55");
 		entity11.setUpdatedBy("admin");
-		drvierService.updateDrvier(entity);
+		drvierService.updateDrvier(entity11);
 	}
 
 }
