@@ -10,8 +10,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.util.*;
 
 /**
  * 单元测试例子。测试Service
@@ -101,18 +101,18 @@ public class DemoApplicationTests {
 		System.err.println(b);
 
 		//删除key
-		long remove = redisSingleClient.remove("123");
+		long remove = redisSingleClient.delete("123");
 		System.err.println(remove);
 
 		//删除key
-		long remove2 = redisSingleClient.remove("123");
+		long remove2 = redisSingleClient.delete("123");
 		System.err.println(remove2);
 
 		//是否存在
 		boolean b2 = redisSingleClient.exists("123");
 		System.err.println(b2);
 
-		//
+		//setnx锁模拟测试
 		long setnx = redisSingleClient.setnx("suo", "123");
 		System.err.println(setnx);
 		long setnx2 = redisSingleClient.setnx("suo", "123");
@@ -138,7 +138,7 @@ public class DemoApplicationTests {
 		boolean b1 = redisSingleClient.existsObject("哈哈");
 		System.err.println(b1);
 
-		redisSingleClient.removeObject("哈哈");
+		redisSingleClient.deleteObject("哈哈");
 
 		boolean c = redisSingleClient.existsObject("哈哈");
 		System.err.println(c);
@@ -147,6 +147,7 @@ public class DemoApplicationTests {
 		System.err.println(d);
 
 
+		//测试Redis 对List的支持
 		List<String> strs = new ArrayList();
 		strs.add("123");
 		strs.add("456");
@@ -168,8 +169,8 @@ public class DemoApplicationTests {
 		DrvierEntity entity9 = new DrvierEntity();
 		entity9.setDrvierPhone("15000819998");
 		entity9.setDrvierName("董杨炀2");
-		list.add(entity8);
-		list.add(entity9);
+		list5.add(entity8);
+		list5.add(entity9);
 		long drviers = redisSingleClient.setObjectList("drviers2", list5, 0);
 		System.err.println(drviers);
 
@@ -197,6 +198,110 @@ public class DemoApplicationTests {
 			DrvierEntity entity5 =(DrvierEntity)drviers3.get(i);
 			System.err.println(entity5.getDrvierPhone());
 			System.err.println(entity5.getDrvierName());
+		}
+
+		//测试redis Set操作API
+		Set<String> set = new HashSet();
+		set.add("789");
+		set.add("456");
+		long set1 = redisSingleClient.setSet("set", set, 0);
+		System.err.println(set1);
+
+		long set2 = redisSingleClient.setAdd("set","123");
+		System.err.println(set2);
+
+		DrvierEntity s1 = new DrvierEntity();
+		s1.setDrvierPhone("15000819998");
+		s1.setDrvierName("董杨炀1");
+		DrvierEntity s2 = new DrvierEntity();
+		s2.setDrvierPhone("15000819998");
+		s2.setDrvierName("董杨炀2");
+		DrvierEntity s3 = new DrvierEntity();
+		s3.setDrvierPhone("15000819997");
+		s3.setDrvierName("董杨炀3");
+		Set set3 = new HashSet();
+		set3.add(s1);
+		set3.add(s2);
+		long s4 = redisSingleClient.setObjectSet("set3", set3, 0);
+		System.err.println(s4);
+
+		long s5 = redisSingleClient.setObjectAdd("set3",s3);
+		System.err.println(s5);
+
+		Set<String> set4 = redisSingleClient.getSet("set");
+		for (String o: set4) {
+			System.err.println(o);
+		}
+
+		Set<Object> set5 = redisSingleClient.getObjectSet("set3");
+		for (Object o: set5) {
+			DrvierEntity e3 = (DrvierEntity)o;
+			System.err.println(e3.getDrvierPhone());
+			System.err.println(e3.getDrvierName());
+		}
+
+		//redis对Map的支持
+		Map<String,String> map = new HashMap<>();
+		map.put("a","a");
+		map.put("b","b");
+		map.put("c","c");
+		String map1 = redisSingleClient.setMap("map", map, 0);
+		System.err.println(map1);
+
+		Map<String,String> map2 = new HashMap<>();
+		map2.put("d","d");
+
+		String map3 = redisSingleClient.mapPut("map", map2);
+		System.err.println(map3);
+
+		//判断map的key是否在Map缓存中存在
+		boolean b5 = redisSingleClient.mapExists("map", "a");
+		System.err.println(b5);
+
+		redisSingleClient.mapRemove("map","a");
+
+		boolean b6 = redisSingleClient.mapExists("map", "a");
+		System.err.println(b6);
+
+		Map<String, String> map4 = redisSingleClient.getMap("map");
+		for (String s9 : map4.values()) {
+			System.err.println(s9);
+		}
+
+		DrvierEntity m1 = new DrvierEntity();
+		m1.setDrvierPhone("15000819998");
+		m1.setDrvierName("董杨炀1");
+		DrvierEntity m2 = new DrvierEntity();
+		m2.setDrvierPhone("15000819998");
+		m2.setDrvierName("董杨炀2");
+		DrvierEntity m3 = new DrvierEntity();
+		m3.setDrvierPhone("15000819998");
+		m3.setDrvierName("董杨炀3");
+		Map<String,Object> objMap = new HashMap<>();
+		Map<String,Object> objMap2 = new HashMap<>();
+		objMap.put("a",m1);
+		objMap.put("b",m2);
+		objMap2.put("c",m3);
+		String r1 = redisSingleClient.setObjectMap("objMap", objMap, 0);
+		System.err.println(r1);
+
+		String r2 = redisSingleClient.mapObjectPut("objMap", objMap2);
+		System.err.println(r2);
+
+		boolean b3 = redisSingleClient.mapObjectExists("objMap","a");
+		System.err.println(b3);
+
+		redisSingleClient.mapObjectRemove("objMap","a");
+
+		boolean b4 = redisSingleClient.mapObjectExists("objMap","a");
+		System.err.println(b4);
+
+		Map<String, Object> objectMap = redisSingleClient.getObjectMap("objMap");
+
+		for (Object s9 : objectMap.values()) {
+			DrvierEntity m4 = (DrvierEntity)s9;
+			System.err.println(m4.getDrvierPhone());
+			System.err.println(m4.getDrvierName());
 		}
 	}
 

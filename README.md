@@ -15,3 +15,5 @@
 7.springboot发送邮件简单示例
 
 8.log4j优化配置，缓冲区，一小时生成一个log文件，优化磁盘IO。分布式可以改造日志同步到kafka
+
+9.集成Jedis,支持单机/集群,封装JedisAPI完成对List，Set，Map，String的常归缓存操作,实现分布式集群锁。

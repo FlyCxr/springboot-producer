@@ -1,6 +1,8 @@
 package com.springboot.redis;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.springboot.util.SerializeUtil;
 import com.springboot.util.StringUtil;
 import org.slf4j.Logger;
@@ -11,6 +13,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.exceptions.JedisException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 @SuppressWarnings("all")
@@ -97,6 +101,9 @@ public class RedisSingleClient {
         Jedis jedis = null;
         try {
             jedis = this.getResource();
+            if (jedis.exists(key)) {
+                jedis.del(key);
+            }
             result = jedis.set(key, value);
             if (cacheSeconds != 0) {
                 jedis.expire(key, cacheSeconds);
@@ -124,6 +131,9 @@ public class RedisSingleClient {
         Jedis jedis = null;
         try {
             jedis = getResource();
+            if (jedis.exists(getBytesKey(key))) {
+                jedis.del(getBytesKey(key));
+            }
             result = jedis.set(getBytesKey(key),toBytes(value));
             if (cacheSeconds != 0) {
                 jedis.expire(key, cacheSeconds);
@@ -153,7 +163,7 @@ public class RedisSingleClient {
             if (jedis.exists(key)) {
                 jedis.del(key);
             }
-            String[] values = (String[]) value.toArray(new String[0]);
+            String[] values = (String[]) value.toArray(new String[value.size()]);
             result = jedis.rpush(key,values);
             if (cacheSeconds != 0) {
                 jedis.expire(key, cacheSeconds);
@@ -180,8 +190,8 @@ public class RedisSingleClient {
         Jedis jedis = null;
         try {
             jedis = getResource();
-            if (jedis.exists(key)) {
-                jedis.del(key);
+            if (jedis.exists(getBytesKey(key))) {
+                jedis.del(getBytesKey(key));
             }
             List<byte[]> list = Lists.newArrayList();
             for (Object o : value){
@@ -201,10 +211,130 @@ public class RedisSingleClient {
     }
 
     /**
+     * 设置Set缓存
+     * @param key
+     * @param value
+     * @param cacheSeconds
+     * @return
+     */
+    public long setSet(String key, Set<String> value, int cacheSeconds) {
+        long result = 0;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            if (jedis.exists(key)) {
+                jedis.del(key);
+            }
+            String[] values = (String[]) value.toArray(new String[value.size()]);
+            result = jedis.sadd(key, values);
+            if (cacheSeconds != 0) {
+                jedis.expire(key, cacheSeconds);
+            }
+            logger.debug("setSet {} = {}", key, value);
+        } catch (Exception e) {
+            logger.error("setSet {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    /**
+     * 设置Set缓存
+     * 针对Object序列化存取
+     * 返回set的SIZE
+     * @param key
+     * @param value
+     * @param cacheSeconds
+     * @return
+     */
+    public long setObjectSet(String key, Set<Object> value, int cacheSeconds) {
+        long result = 0;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            if (jedis.exists(getBytesKey(key))) {
+                jedis.del(key);
+            }
+            Set<byte[]> set = Sets.newHashSet();
+            for (Object o : value){
+                set.add(toBytes(o));
+            }
+            result = jedis.sadd(getBytesKey(key), (byte[][])set.toArray(new byte[set.size()][]));
+            if (cacheSeconds != 0) {
+                jedis.expire(key, cacheSeconds);
+            }
+            logger.debug("setObjectSet {} = {}", key, value);
+        } catch (Exception e) {
+            logger.error("setObjectSet {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    /**
+     * 设置Map缓存
+     * @param key
+     * @param value
+     * @param cacheSeconds
+     * @return
+     */
+    public  String setMap(String key, Map<String, String> value, int cacheSeconds) {
+        String result = null;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            if (jedis.exists(key)) {
+                jedis.del(key);
+            }
+            result = jedis.hmset(key, value);
+            if (cacheSeconds != 0) {
+                jedis.expire(key, cacheSeconds);
+            }
+            logger.debug("setMap {} = {}", key, value);
+        } catch (Exception e) {
+            logger.error("setMap {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    /**
+     * 设置Map缓存
+     * @param key
+     * @param value
+     * @param cacheSeconds
+     * @return
+     */
+    public  String setObjectMap(String key, Map<String, Object> value, int cacheSeconds) {
+        String result = null;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            if (jedis.exists(getBytesKey(key))) {
+                jedis.del(getBytesKey(key));
+            }
+            Map<byte[], byte[]> map = Maps.newHashMap();
+            for (Map.Entry<String, Object> e : value.entrySet()){
+                map.put(getBytesKey(e.getKey()), toBytes(e.getValue()));
+            }
+            result = jedis.hmset(getBytesKey(key), (Map<byte[], byte[]>)map);
+            if (cacheSeconds != 0) {
+                jedis.expire(key, cacheSeconds);
+            }
+            logger.debug("setObjectMap {} = {}", key, value);
+        } catch (Exception e) {
+            logger.error("setObjectMap {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    /**
      * 向List缓存中添加值
-     * List<String>
-     * @autho 董杨炀
-     * @time 2017年5月6日 上午11:15:35
      * @param key
      * @param value
      * @return
@@ -226,12 +356,12 @@ public class RedisSingleClient {
 
     /**
      * 向List缓存中添加值
-     * 针对Object
+     * 针对Object序列化存取
      * @param key
      * @param value
      * @return
      */
-    public  long listObjectAdd(String key, Object... value) {
+    public long listObjectAdd(String key, Object... value) {
         long result = 0;
         Jedis jedis = null;
         try {
@@ -249,6 +379,102 @@ public class RedisSingleClient {
         }
         return result;
     }
+
+    /**
+     * 向Set缓存中添加值
+     * 与setListAdd不同，只能返回此次添加的个数
+     * @param key
+     * @param value
+     * @return
+     */
+    public long setAdd(String key, String... value) {
+        long result = 0;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            result = jedis.sadd(key, value);
+            logger.debug("setSetAdd {} = {}", key, value);
+        } catch (Exception e) {
+            logger.error("setSetAdd {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    /**
+     * 向Set缓存中添加值
+     * 针对Object序列化存取
+     * 与setListAdd不同，只能返回此次添加的个数
+     * @param key
+     * @param value
+     * @return
+     */
+    public long setObjectAdd(String key, Object... value) {
+        long result = 0;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            Set<byte[]> set = Sets.newHashSet();
+            for (Object o : value){
+                set.add(toBytes(o));
+            }
+            result = jedis.sadd(getBytesKey(key), (byte[][])set.toArray(new byte[set.size()][]));
+            logger.debug("setSetObjectAdd {} = {}", key, value);
+        } catch (Exception e) {
+            logger.error("setSetObjectAdd {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    /**
+     * 向Map缓存中添加值
+     * @param key
+     * @param value
+     * @return
+     */
+    public String mapPut(String key, Map<String, String> value) {
+        String result = null;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            result = jedis.hmset(key, value);
+            logger.debug("mapPut {} = {}", key, value);
+        } catch (Exception e) {
+            logger.error("mapPut {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    /**
+     * 向Map缓存中添加值
+     * @param key
+     * @param value
+     * @return
+     */
+    public String mapObjectPut(String key, Map<String, Object> value) {
+        String result = null;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            Map<byte[], byte[]> map = Maps.newHashMap();
+            for (Map.Entry<String, Object> e : value.entrySet()){
+                map.put(getBytesKey(e.getKey()), toBytes(e.getValue()));
+            }
+            result = jedis.hmset(getBytesKey(key), (Map<byte[], byte[]>)map);
+            logger.debug("mapObjectPut {} = {}", key, value);
+        } catch (Exception e) {
+            logger.error("mapObjectPut {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
 
     /**
      * 获取缓存
@@ -347,11 +573,107 @@ public class RedisSingleClient {
     }
 
     /**
+     * 获取缓存
+     * @param key
+     * @return
+     */
+    public  Set<String> getSet(String key) {
+        Set<String> value = null;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            if (jedis.exists(key)) {
+                value = jedis.smembers(key);
+                logger.debug("getSet {} = {}", key, value);
+            }
+        } catch (Exception e) {
+            logger.error("getSet {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return value;
+    }
+
+    /**
+     * 获取缓存
+     * @param key
+     * @return
+     */
+    public  Set<Object> getObjectSet(String key) {
+        Set<Object> value = null;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            if (jedis.exists(getBytesKey(key))) {
+                value = Sets.newHashSet();
+                Set<byte[]> set = jedis.smembers(getBytesKey(key));
+                for (byte[] bs : set){
+                    value.add(toObject(bs));
+                }
+                logger.debug("getObjectSet {} = {}", key, value);
+            }
+        } catch (Exception e) {
+            logger.error("getObjectSet {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return value;
+    }
+
+    /**
+     * 获取Map缓存
+     * @param key
+     * @return
+     */
+    public Map<String, String> getMap(String key) {
+        Map<String, String> value = null;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            if (jedis.exists(key)) {
+                value = jedis.hgetAll(key);
+                logger.debug("getMap {} = {}", key, value);
+            }
+        } catch (Exception e) {
+            logger.error("getMap {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return value;
+    }
+
+    /**
+     * 获取Map缓存
+     * @param key
+     * @return
+     */
+    public  Map<String, Object> getObjectMap(String key) {
+        Map<String, Object> value = null;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            if (jedis.exists(getBytesKey(key))) {
+                value = Maps.newHashMap();
+                Map<byte[], byte[]> map = jedis.hgetAll(getBytesKey(key));
+                for (Map.Entry<byte[], byte[]> e : map.entrySet()){
+                    value.put(new String(e.getKey()), toObject(e.getValue()));
+                }
+                logger.debug("getObjectMap {} = {}", key, value);
+            }
+        } catch (Exception e) {
+            logger.error("getObjectMap {} = {}", key, value, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return value;
+    }
+
+    /**
      * 删除缓存 成功返回1
      * @param key
      * @return
      */
-    public long remove(String key) {
+    public long delete(String key) {
         long result = 0;
         Jedis jedis = null;
         try {
@@ -375,7 +697,7 @@ public class RedisSingleClient {
      * @param key
      * @return
      */
-    public long removeObject(String key) {
+    public long deleteObject(String key) {
         long result = 0;
         Jedis jedis = null;
         try {
@@ -435,6 +757,91 @@ public class RedisSingleClient {
         }
         return result;
     }
+
+    /**
+     * 移除Map缓存中的值
+     * @param key
+     * @param mapKey
+     * @return
+     */
+    public long mapRemove(String key, String mapKey) {
+        long result = 0;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            result = jedis.hdel(key, mapKey);
+            logger.debug("mapRemove {}  {}", key, mapKey);
+        } catch (Exception e) {
+            logger.error("mapRemove {}  {}", key, mapKey, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    /**
+     * 移除Map缓存中的值
+     * @param key
+     * @param mapKey
+     * @return
+     */
+    public  long mapObjectRemove(String key, String mapKey) {
+        long result = 0;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            result = jedis.hdel(getBytesKey(key), getBytesKey(mapKey));
+            logger.debug("mapObjectRemove {}  {}", key, mapKey);
+        } catch (Exception e) {
+            logger.error("mapObjectRemove {}  {}", key, mapKey, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    /**
+     * 判断Map缓存中的Key是否存在
+     * @param key
+     * @param mapKey
+     * @return
+     */
+    public  boolean mapExists(String key, String mapKey) {
+        boolean result = false;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            result = jedis.hexists(key, mapKey);
+            logger.debug("mapExists {}  {}", key, mapKey);
+        } catch (Exception e) {
+            logger.error("mapExists {}  {}", key, mapKey, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
+    /**
+     * 判断Map缓存中的Key是否存在
+     * @param key
+     * @param mapKey
+     * @return
+     */
+    public  boolean mapObjectExists(String key, String mapKey) {
+        boolean result = false;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            result = jedis.hexists(getBytesKey(key), getBytesKey(mapKey));
+            logger.debug("mapObjectExists {}  {}", key, mapKey);
+        } catch (Exception e) {
+            logger.error("mapObjectExists {}  {}", key, mapKey, e);
+        } finally {
+            returnResource(jedis);
+        }
+        return result;
+    }
+
 
     /**
      * 获取byte[]类型Key
