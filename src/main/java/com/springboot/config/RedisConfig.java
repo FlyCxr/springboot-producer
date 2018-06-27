@@ -32,11 +32,21 @@ public class RedisConfig {
     @Bean(name= "jedis.pool.config")
     public JedisPoolConfig jedisPoolConfig (@Value("${jedis.pool.config.maxTotal}")int maxTotal,
                                             @Value("${jedis.pool.config.maxIdle}")int maxIdle,
-                                            @Value("${jedis.pool.config.maxWaitMillis}")int maxWaitMillis) {
+                                            @Value("${jedis.pool.config.maxWaitMillis}")int maxWaitMillis,
+                                            @Value("${jedis.pool.config.minIdle}")int minIdle,
+                                            @Value("${jedis.pool.config.minEvictableIdleTimeMillis}")int minEvictableIdleTimeMillis) {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(maxTotal);
         config.setMaxIdle(maxIdle);
+        config.setMinIdle(minIdle);
         config.setMaxWaitMillis(maxWaitMillis);
+        config.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);
+        config.setEvictionPolicyClassName("org.apache.commons.pool2.impl.DefaultEvictionPolicy");
+        config.setBlockWhenExhausted(false);
+        config.setTimeBetweenEvictionRunsMillis(-1);
+        config.setTestOnBorrow(false);
+        config.setTestWhileIdle(false);
+        config.setNumTestsPerEvictionRun(3);
         return config;
     }
 }
