@@ -22,11 +22,16 @@ public class AESUtil {
 	 * @param encryptStr
 	 * @return
 	 */
-	public static byte[] encrypt(byte[] src, String key) throws Exception {
-		Cipher cipher = Cipher.getInstance(AES);
-		SecretKeySpec securekey = new SecretKeySpec(key.getBytes(), AES);
-		cipher.init(Cipher.ENCRYPT_MODE, securekey);
-		return cipher.doFinal(src);
+	public static byte[] encrypt(byte[] src, String key)  {
+		try{
+			Cipher cipher = Cipher.getInstance(AES);
+			SecretKeySpec securekey = new SecretKeySpec(key.getBytes(), AES);
+			cipher.init(Cipher.ENCRYPT_MODE, securekey);
+			return cipher.doFinal(src);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -35,11 +40,16 @@ public class AESUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static byte[] decrypt(byte[] src, String key) throws Exception {
-		Cipher cipher = Cipher.getInstance(AES);
-		SecretKeySpec securekey = new SecretKeySpec(key.getBytes(), AES);
-		cipher.init(Cipher.DECRYPT_MODE, securekey);
-		return cipher.doFinal(src);
+	public static byte[] decrypt(byte[] src, String key)  {
+		try{
+			Cipher cipher = Cipher.getInstance(AES);
+			SecretKeySpec securekey = new SecretKeySpec(key.getBytes(), AES);
+			cipher.init(Cipher.DECRYPT_MODE, securekey);
+			return cipher.doFinal(src);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static String byte2hex(byte[] b) {
@@ -76,6 +86,7 @@ public class AESUtil {
 		try {
 			return new String(decrypt(hex2byte(data.getBytes()), CRYPT_KEY), "UTF-8");
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -87,11 +98,16 @@ public class AESUtil {
 	 * @throws UnsupportedEncodingException 
 	 * @throws Exception
 	 */
-	public final static String encrypt(String data) throws UnsupportedEncodingException, Exception {
-		return byte2hex(encrypt(data.getBytes("UTF-8"), CRYPT_KEY));
+	public final static String encrypt(String data) {
+		try{
+			return byte2hex(encrypt(data.getBytes("UTF-8"), CRYPT_KEY));
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
-	public static void main(String[] args) throws UnsupportedEncodingException, Exception {
+	public static void main(String[] args)  {
 		String string = encrypt("曹杰");
 		System.out.println(string);
 		String string2 = decrypt(string);
