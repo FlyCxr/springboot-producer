@@ -3,6 +3,7 @@ package com.springboot.redis;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.springboot.exception.BusinessException;
 import com.springboot.util.SerializeUtil;
 import com.springboot.util.StringUtil;
 import org.slf4j.Logger;
@@ -29,7 +30,6 @@ public class RedisSingleClient {
      * setnx 分布式锁实现
      * 设置成功，返回 1
      * 设置失败，返回 0
-     * 异常返回2
      * @param key
      * @param value
      * @return
@@ -43,7 +43,7 @@ public class RedisSingleClient {
             logger.debug("setnx {}", key);
         } catch (Exception e) {
             logger.error("setnx {}", key, e);
-            result = 2L;
+            throw new BusinessException();
         } finally {
             this.returnResource(jedis);
         }
@@ -680,16 +680,41 @@ public class RedisSingleClient {
             jedis = this.getResource();
             if (jedis.exists(key)){
                 result = jedis.del(key);
-                logger.debug("remove {}", key);
+                logger.debug("delete {}", key);
             }else{
-                logger.warn("remove {} not exists", key);
+                logger.warn("delete {} not exists", key);
             }
         } catch (Exception e) {
-            logger.error("remove {}", key, e);
+            logger.error("delete {}", key, e);
         } finally {
             this.returnResource(jedis);
         }
         return result;
+    }
+
+    /**
+     * 批量删除缓存
+     * @param key
+     * @return
+     */
+    public void delete(List<String> keys) {
+        long result = 0;
+        Jedis jedis = null;
+        try {
+            jedis = this.getResource();
+            for (String key :keys) {
+                if (jedis.exists(key)){
+                    result = jedis.del(key);
+                    logger.debug("delete {}", key);
+                }else{
+                    logger.warn("delete {} not exists", key);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("delete {}", keys, e);
+        } finally {
+            this.returnResource(jedis);
+        }
     }
 
     /**
@@ -704,16 +729,41 @@ public class RedisSingleClient {
             jedis = getResource();
             if (jedis.exists(getBytesKey(key))){
                 result = jedis.del(getBytesKey(key));
-                logger.debug("removeObject {}", key);
+                logger.debug("deleteObject {}", key);
             }else{
-                logger.debug("removeObject {} not exists", key);
+                logger.debug("deleteObject {} not exists", key);
             }
         } catch (Exception e) {
-            logger.error("removeObject {}", key, e);
+            logger.error("deleteObject {}", key, e);
         } finally {
             returnResource(jedis);
         }
         return result;
+    }
+
+    /**
+     * 批量删除缓存
+     * @param key
+     * @return
+     */
+    public void deleteObject(List<String> keys) {
+        long result = 0;
+        Jedis jedis = null;
+        try {
+            jedis = getResource();
+            for (String key :keys) {
+                if (jedis.exists(getBytesKey(key))){
+                    result = jedis.del(getBytesKey(key));
+                    logger.debug("deleteObject {}", key);
+                }else{
+                    logger.debug("deleteObject {} not exists", key);
+                }
+            }
+        } catch (Exception e) {
+            logger.error("deleteObject {}", keys, e);
+        } finally {
+            returnResource(jedis);
+        }
     }
 
     /**
@@ -909,4 +959,5 @@ public class RedisSingleClient {
             jedisPool.returnResource(jedis);
         }
     }
+
 }

@@ -115,7 +115,7 @@ public class DrvierController {
         BaseVo r = new BaseVo();
         try {
             int a = drvierService.updateDrvier(entity);
-            if(a != 1){
+            if(a == 2 || a == 0){
                 r.setStatus(StatusEnum.FAILURE_201.getCode());
             }
         } catch (Exception e) {
