@@ -1,5 +1,8 @@
 package com.springboot.util;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,9 +13,11 @@ import java.util.List;
  * WebUpload上传FileUtil工具类
  */
 @SuppressWarnings("all")
+@Component
 public class WebUploadFileUtil {
 
-	public static final String Chunk_Delimiter = "-";
+	@Value("${upload.delimiter}")
+	private static String Chunk_Delimiter;
 
 	public static final int BUFFER_SIZE = 4096;
 
