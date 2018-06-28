@@ -12,16 +12,19 @@ import com.springboot.service.UserService;
 import com.springboot.util.AESUtil;
 import com.springboot.util.StringUtil;
 import com.springboot.vo.UserVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.Resource;
 import java.util.Date;
 
 @Service("userService")
 @SuppressWarnings("all")
 public class UserServiceImpl extends BaseServiceImpl<UserEntity> implements UserService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Value("${token.validTime}")
     private String tokenValidTime;
@@ -43,7 +46,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity> implements User
         //校验用户名是否存在
         UserEntity checkUserName = userDao.getUserByUserName(userName);
         if(checkUserName == null){
-            throw new BusinessException(UserErrorEnum.USERNAME_NOT_EXIST.getCode()+":"+UserErrorEnum.USERNAME_NOT_EXIST.getMsg());
+            throw new BusinessException(UserErrorEnum.USERNAME_NOT_EXIST.getCode());
         }
         //校验该用户是否已登录
         String checkToken = redisSingleClient.get(CacheEnum.USER_LOGIN.getCachePrefix() + userName);
@@ -52,7 +55,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity> implements User
             //校验账号是否已被锁定
             String failureCount = redisSingleClient.get(CacheEnum.USER_LOGIN_FAILURE.getCachePrefix() + userName);
             if(StringUtil.isNotBlank(failureCount) && Integer.valueOf(failureCount) >= 5){
-                throw new BusinessException(UserErrorEnum.ACCOUNT_ALREADY_LOCK.getCode()+":"+UserErrorEnum.ACCOUNT_ALREADY_LOCK.getMsg());
+                throw new BusinessException(UserErrorEnum.ACCOUNT_ALREADY_LOCK.getCode());
             }
             UserEntity login = userDao.getUserByLogin(userName,password);
             if(login!=null){
@@ -73,7 +76,7 @@ public class UserServiceImpl extends BaseServiceImpl<UserEntity> implements User
                 }else{
                     redisSingleClient.set(CacheEnum.USER_LOGIN_FAILURE.getCachePrefix() + userName,"1",30*60);
                 }
-                throw new BusinessException(UserErrorEnum.USERNAME_OR_PWD_NOT_RIGHT.getCode()+":"+UserErrorEnum.USERNAME_OR_PWD_NOT_RIGHT.getMsg());
+                throw new BusinessException(UserErrorEnum.USERNAME_OR_PWD_NOT_RIGHT.getCode());
             }
         }else{
             Date now = new Date();

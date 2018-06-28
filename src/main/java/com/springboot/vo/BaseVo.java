@@ -4,7 +4,7 @@ import com.springboot.enums.StatusEnum;
 
 public class BaseVo {
 
-    private Integer status = StatusEnum.SUCCESS_200.getCode();
+    private Integer status = StatusEnum.SUCCESS_666.getCode();
 
     private Object data;
 

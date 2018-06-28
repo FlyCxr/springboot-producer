@@ -21,3 +21,7 @@
 10.利用redis实现单点登录，并限制登录失败次数5次进行账号锁定保护
 
 11.全局配置对cors跨域的支持
+
+12.GlobalEncodingFilter过滤请求，设置编码
+
+13.SecurityInterceptor拦截Controller,校验SIGN TOKEN,延长token有效时间

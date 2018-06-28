@@ -3,22 +3,26 @@ package com.springboot.config;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.springboot.common.interceptor.SecurityInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.config.annotation.*;
 
 import javax.servlet.MultipartConfigElement;
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
+@Component
 public class CoreConfig extends WebMvcConfigurationSupport {
+
+    @Autowired
+    private SecurityInterceptor securityInterceptor;
 
     /**
      * 文件上传配置
@@ -76,6 +80,15 @@ public class CoreConfig extends WebMvcConfigurationSupport {
                 .allowCredentials(true);
     }
 
+    /**
+     * token校验/Sign校验
+     * @param registry
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry){
+        registry.addInterceptor(securityInterceptor)        //指定拦截器类
+                .addPathPatterns("/**");                    //指定该类拦截的url
+    }
 
     /**
      * 配置servlet处理
