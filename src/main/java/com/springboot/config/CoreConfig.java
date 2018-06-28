@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -65,6 +65,15 @@ public class CoreConfig extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/webjars/**").addResourceLocations(
                 "classpath:/META-INF/resources/webjars/");
         super.addResourceHandlers(registry);
+    }
+
+    //Cors设置跨域访问
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("*")
+                .allowCredentials(true);
     }
 
 
