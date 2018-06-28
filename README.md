@@ -25,3 +25,5 @@
 12.GlobalEncodingFilter过滤请求，设置编码
 
 13.SecurityInterceptor拦截Controller,校验SIGN TOKEN,延长token有效时间
+
+14.PerformanceAspect AOP的支持，监控Controller层接口性能
