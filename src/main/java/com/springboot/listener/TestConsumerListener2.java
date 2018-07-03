@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @SuppressWarnings("all")
-public class TestConsumerListener {
+public class TestConsumerListener2 {
 
-    private static final Logger logger = LoggerFactory.getLogger(TestConsumerListener.class);
+    private static final Logger logger = LoggerFactory.getLogger(TestConsumerListener2.class);
 
     @KafkaListener(topics = "${kafka.test.topic}")
     public void listen (ConsumerRecord<?, ?> record) throws Exception {

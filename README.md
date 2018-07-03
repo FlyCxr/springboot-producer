@@ -6,7 +6,7 @@
 
 3.整合swagger生成API文档，www.gitpig.com:8088/swagger-ui.html#/
 
-4.整合kafka，简单发布订阅Topic
+4.整合kafka,集群环境,多生产/多消费,建议分区数是消费者的整数倍，分区数是节点数的整数倍
 
 5.整合WebUpload组件实现批量，分片上传，包含进度条，图片预览，以文件为单位续传，www.gitpig.com:8088/webupload/index
 
