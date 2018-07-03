@@ -32,7 +32,6 @@ public class GlobalEncodingFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        LOGGER.info("GlobalEncodingFilter start");
         String charset = this.config.getInitParameter("charset");
         if (charset == null) {
             charset = defaultCharset;
