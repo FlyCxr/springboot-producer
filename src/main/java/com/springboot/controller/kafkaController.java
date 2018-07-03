@@ -3,6 +3,7 @@ package com.springboot.controller;
 import com.springboot.enums.StatusEnum;
 import com.springboot.vo.BaseVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,9 @@ import springfox.documentation.annotations.ApiIgnore;
 @SuppressWarnings("all")
 public class kafkaController {
 
+    @Value("${kafka.test.topic}")
+    private String topicName;
+
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
@@ -21,7 +25,7 @@ public class kafkaController {
     public ResponseEntity<BaseVo> send(@RequestParam(value="data",defaultValue = "data123") String data){
         BaseVo r = new BaseVo();
         try {
-            kafkaTemplate.send("test_topic1", data);
+            kafkaTemplate.send(topicName, data);
         } catch (Exception e) {
             r.setMsgValue(e.getMessage());
             r.setStatus(StatusEnum.ERROR_500.getCode());
