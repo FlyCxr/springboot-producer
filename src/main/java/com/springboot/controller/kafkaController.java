@@ -18,10 +18,10 @@ public class kafkaController {
     private KafkaTemplate<String, String> kafkaTemplate;
 
     @RequestMapping(value = "send",method = RequestMethod.GET,produces="application/json;charset=UTF-8")
-    public ResponseEntity<BaseVo> send(){
+    public ResponseEntity<BaseVo> send(@RequestParam(value="data",defaultValue = "data123") String data){
         BaseVo r = new BaseVo();
         try {
-            kafkaTemplate.send("demolog2", "123456789");
+            kafkaTemplate.send("test_topic1", data);
         } catch (Exception e) {
             r.setMsgValue(e.getMessage());
             r.setStatus(StatusEnum.ERROR_500.getCode());

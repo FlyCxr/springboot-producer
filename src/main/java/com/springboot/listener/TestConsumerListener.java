@@ -12,7 +12,7 @@ public class TestConsumerListener {
 
     private static final Logger logger = LoggerFactory.getLogger(TestConsumerListener.class);
 
-    @KafkaListener(topics = "demolog2")
+    @KafkaListener(topics = "test_topic1")
     public void listen (ConsumerRecord<?, ?> record) throws Exception {
         logger.info(record.toString());
     }

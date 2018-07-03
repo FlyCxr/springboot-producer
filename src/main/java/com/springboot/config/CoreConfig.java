@@ -84,11 +84,11 @@ public class CoreConfig extends WebMvcConfigurationSupport {
      * token校验/Sign校验
      * @param registry
      */
-    @Override
-    public void addInterceptors(InterceptorRegistry registry){
-        registry.addInterceptor(securityInterceptor)        //指定拦截器类
-                .addPathPatterns("/**");                    //指定该类拦截的url
-    }
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry){
+//        registry.addInterceptor(securityInterceptor)        //指定拦截器类
+//                .addPathPatterns("/**");                    //指定该类拦截的url
+//    }
 
     /**
      * 配置servlet处理
