@@ -1,6 +1,7 @@
 package com.springboot;
 
 import com.alibaba.fastjson.JSONObject;
+import com.springboot.config.HttpClientApi;
 import com.springboot.entity.DrvierEntity;
 import com.springboot.redis.RedisSingleClient;
 import com.springboot.service.DrvierService;
@@ -29,8 +30,15 @@ public class DemoApplicationTests {
 	@Autowired
 	private RedisSingleClient redisSingleClient;
 
+	@Autowired
+	private HttpClientApi httpClientApi;
+
 	@Test
-	public void contextLoads() {
+	public void contextLoads() throws Exception{
+
+		String baidu = httpClientApi.doGet("http://www.baidu.com/");
+		System.out.println(baidu);
+
 		/**
 		 * 根据手机号查询司机
 		 */
