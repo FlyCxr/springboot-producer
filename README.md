@@ -27,3 +27,7 @@
 13.SecurityInterceptor拦截Controller,校验SIGN TOKEN,延长token有效时间
 
 14.PerformanceAspect AOP的支持，监控Controller层接口性能
+
+15.整合HttpClient技术，HTTP连接池。其余调用方式参考服务消费者项目演示
+
+16.整合Netty,TCP长连接,自定义协议,心跳监测
