@@ -1,6 +1,7 @@
 package com.springboot.controller;
 
 import com.springboot.common.aspect.Performance;
+import com.springboot.common.interceptor.SecurityCheck;
 import com.springboot.entity.DrvierEntity;
 import com.springboot.enums.StatusEnum;
 import com.springboot.exception.BusinessException;
@@ -26,6 +27,7 @@ public class DrvierController {
     private DrvierService drvierService;
 
     @Performance
+    @SecurityCheck
     @ApiOperation(value="根据ID获取司机信息", notes="PATH参数")
     @ApiImplicitParam(name = "id", value = "司机ID", required = true, dataType = "Long", paramType = "PATH")
     @ApiResponses(value = {
@@ -51,6 +53,7 @@ public class DrvierController {
     }
 
     @Performance
+    @SecurityCheck
     @ApiOperation(value="根据手机号查询司机", notes="PATH参数")
     @ApiImplicitParam(name = "phoneNum", value = "司机手机号", required = true, dataType = "String", paramType = "PATH")
     @ApiResponses(value = {
@@ -76,6 +79,7 @@ public class DrvierController {
     }
 
     @Performance
+    @SecurityCheck
     @ApiOperation(value="根据用车部门和购车部门查询司机List", notes="URL参数")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "buyCarUnit", value = "购车部门", required = true, dataType = "String", paramType = "URL"),
@@ -105,6 +109,7 @@ public class DrvierController {
     }
 
     @Performance
+    @SecurityCheck
     @ApiOperation(value="根据ID和版本号更新司机的用车部门和购车部门", notes="JSON参数")
     @ApiImplicitParam(name = "entity", value = "司机实体", required = true, dataType = "DrvierEntity")
     @ApiResponses(value = {

@@ -24,9 +24,9 @@
 
 12.GlobalEncodingFilter过滤请求，设置编码
 
-13.SecurityInterceptor拦截Controller,校验SIGN TOKEN,延长token有效时间
+13.SecurityInterceptor拦截Controller,校验SIGN TOKEN,延长token有效时间。注解拦截：@SecurityCheck
 
-14.PerformanceAspect AOP的支持，监控Controller层接口性能。注解AOP
+14.PerformanceAspect AOP的支持，监控Controller层接口性能。注解AOP：@Performance
 
 15.整合HttpClient技术，HTTP连接池。其余调用方式参考服务消费者项目演示
 

@@ -1,5 +1,4 @@
-package com.springboot.common.aspect;
-
+package com.springboot.common.interceptor;
 
 import java.lang.annotation.*;
 
@@ -8,6 +7,5 @@ import java.lang.annotation.*;
 @Inherited
 @Documented
 @SuppressWarnings("all")
-public @interface Performance {
-
+public @interface SecurityCheck {
 }
