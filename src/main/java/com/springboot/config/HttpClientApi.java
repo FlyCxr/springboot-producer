@@ -12,7 +12,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class HttpClientApi {
     private RequestConfig requestConfig;
 
     @Autowired
-    private CloseableHttpClient httpClient;
+    private HttpClientBuilder httpClientBuilder;
 
     /**
      * 无参get请求
@@ -47,12 +47,11 @@ public class HttpClientApi {
      * @throws IOException
      */
     public String doGet(String url) throws ClientProtocolException, IOException{
-        CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(url);
         httpGet.setConfig(requestConfig);
         CloseableHttpResponse response = null;
         try {
-            // 执行请求
+            CloseableHttpClient httpClient = httpClientBuilder.build();
             response = httpClient.execute(httpGet);
             return EntityUtils.toString(response.getEntity(), "UTF-8");
         } finally {
@@ -90,7 +89,6 @@ public class HttpClientApi {
      * @throws IOException
      */
     public String doPost(String url , Map<String, String> params) throws ClientProtocolException, IOException{
-        CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
         httpPost.setConfig(requestConfig);
         if(params != null){
@@ -103,6 +101,7 @@ public class HttpClientApi {
         }
         CloseableHttpResponse response = null;
         try {
+            CloseableHttpClient httpClient = httpClientBuilder.build();
             response = httpClient.execute(httpPost);
             return EntityUtils.toString(response.getEntity(), "UTF-8");
         } finally {
@@ -121,7 +120,6 @@ public class HttpClientApi {
      * @throws IOException
      */
     public String doPostJson(String url , String json) throws ClientProtocolException, IOException{
-        CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(url);
         httpPost.setConfig(requestConfig);
         if(StringUtils.isNotBlank(json)){
@@ -131,6 +129,7 @@ public class HttpClientApi {
         }
         CloseableHttpResponse response = null;
         try {
+            CloseableHttpClient httpClient = httpClientBuilder.build();
             response = httpClient.execute(httpPost);
             return EntityUtils.toString(response.getEntity(), "UTF-8");
         } finally {

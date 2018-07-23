@@ -2,7 +2,6 @@ package com.springboot.config;
 
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -10,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 
 @Configuration
 @PropertySource(value= "classpath:httpClient.properties")
@@ -45,11 +43,6 @@ public class HttpClientConfig {
     @Bean
     public RequestConfig getRequestConfig(@Qualifier("builder") RequestConfig.Builder builder){
         return builder.build();
-    }
-
-    @Bean
-    public CloseableHttpClient getHttpClient(@Qualifier("httpClientBuilder") HttpClientBuilder httpClientBuilder){
-        return httpClientBuilder.build();
     }
 
 }
