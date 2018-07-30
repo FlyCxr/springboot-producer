@@ -3,8 +3,10 @@ package com.springboot.config;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.springboot.common.filter.LoggingFilter;
 import com.springboot.common.interceptor.SecurityInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +25,9 @@ public class CoreConfig extends WebMvcConfigurationSupport {
 
     @Autowired
     private SecurityInterceptor securityInterceptor;
+
+    @Autowired
+    private LoggingFilter loggingFilter;
 
     /**
      * 文件上传配置
@@ -89,6 +94,20 @@ public class CoreConfig extends WebMvcConfigurationSupport {
 //        registry.addInterceptor(securityInterceptor)        //指定拦截器类
 //                .addPathPatterns("/**");                    //指定该类拦截的url
 //    }
+
+    /**
+     * 配置过滤器
+     * @return
+     */
+    @Bean
+    public FilterRegistrationBean getFilterRegistration() {
+        FilterRegistrationBean registration = new FilterRegistrationBean();
+        registration.setFilter(loggingFilter);
+        registration.addUrlPatterns("/*");
+        registration.setName("loggingFilter");
+        registration.setOrder(1);
+        return registration;
+    }
 
     /**
      * 配置servlet处理
