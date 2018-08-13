@@ -1,4 +1,4 @@
-package com.springboot.socket.netty;
+package com.springboot.netty.common;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -6,16 +6,16 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import java.nio.ByteBuffer;
 
+@Service
 @SuppressWarnings("all")
-public abstract class AbstractNettyServerHandler extends ChannelInboundHandlerAdapter {
+public class PuffHandler extends ChannelInboundHandlerAdapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractNettyServerHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PuffHandler.class);
 
-    public AbstractNettyServerHandler() {
-    }
-
+    @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         if (msg instanceof ByteBuf && ((ByteBuf)msg).isReadable()) {
             ByteBuf byteBuf = (ByteBuf)msg;
@@ -26,24 +26,33 @@ public abstract class AbstractNettyServerHandler extends ChannelInboundHandlerAd
             byte[] sourceBytes = new byte[payloadBuffer.remaining()];
             payloadBuffer.get(sourceBytes);
             payloadBuffer.flip();
+            LOGGER.debug("Receive byte msg : {}",sourceBytes);
             this.doLogic(sourceBytes, ctx.channel());
         }
-
     }
 
+    /**
+     * 业务处理模块方法
+     * @param sourceBytes
+     * @param channel
+     */
+    public void doLogic(byte[] sourceBytes, Channel channel) {
+        //TODO 将byte[] 转码解析成自定义对象
+        LOGGER.debug("Receive payload: {}", "将byte[] 转码解析成自定义对象");
+    }
+
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
     }
 
+    @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
         super.channelReadComplete(ctx);
     }
 
+    @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
     }
-
-    public abstract void doLogic(byte[] var1, Channel var2);
-
-    public abstract byte[] decodePayload(ByteBuffer var1) throws Exception;
 }
