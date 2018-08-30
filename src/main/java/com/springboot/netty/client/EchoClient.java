@@ -2,6 +2,7 @@ package com.springboot.netty.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -73,6 +74,20 @@ public class EchoClient {
         public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
             cause.printStackTrace();
             ctx.close();
+        }
+
+        //在与服务端的连接建立之后被调用
+        @Override
+        public void channelActive(ChannelHandlerContext ctx) {
+            System.out.println("server " + ctx.channel().remoteAddress() + " connected");
+            ctx.writeAndFlush(Unpooled.copiedBuffer("Netty rocks!", CharsetUtil.UTF_8));
+        }
+
+        //在与服务端的连接中断之后被调用
+        @Override
+        public void channelInactive(ChannelHandlerContext ctx) {
+            System.out.println("server " + ctx.channel().remoteAddress() + " disconnected");
+            ctx.fireChannelActive();
         }
     }
 }

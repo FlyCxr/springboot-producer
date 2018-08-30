@@ -65,7 +65,7 @@ public class EchoServer {
     @ChannelHandler.Sharable//标示一个ChannelHandler 可以被多个Channel安全地共享
     class EchoServerHandler extends ChannelInboundHandlerAdapter {
 
-        //在与服务器的连接建立之后被调用
+        //在与客户端的连接建立之后被调用
         @Override
         public void channelActive(ChannelHandlerContext ctx) {
             System.out.println("Client " + ctx.channel().remoteAddress() + " connected");
@@ -91,5 +91,11 @@ public class EchoServer {
             ctx.close();
         }
 
+        //在与客户端的断连之后被调用
+        @Override
+        public void channelInactive(ChannelHandlerContext ctx) {
+            System.out.println("Client " + ctx.channel().remoteAddress() + " disconnected");
+            ctx.fireChannelActive();
+        }
     }
 }
